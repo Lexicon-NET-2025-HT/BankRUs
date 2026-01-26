@@ -1,8 +1,7 @@
 ﻿using BankRUs.Api.Dtos.Accounts;
 using BankRUs.Application.UseCases.OpenAccount;
 using Microsoft.AspNetCore.Mvc;
-using System.Text;
-using System.Text.Json;
+using System.Globalization;
 
 namespace BankRUs.Api.Controllers;
 
@@ -19,18 +18,38 @@ public class AccountsController : ControllerBase
 
     // POST /api/accounts (Endpoint /  API endpoint)
     [HttpPost]
-    public async Task<IActionResult> Create(CreateAccountRequestDto requestDto)
+    public async Task<IActionResult> Create(CreateAccountRequestDto request)
     {
+        // Tjocka vs Tunna controllers
+
         var openAccountResult = await _openAccountHandler.HandleAsync(
             new OpenAccountCommand(
-                FirstName: requestDto.FirstName,
-                LastName: requestDto.LastName,
-                SocialSecurityNumber: requestDto.SocialSecurityNumber,
-                Email: requestDto.Email));
+                FirstName: request.FirstName,
+                LastName: request.LastName,
+                SocialSecurityNumber: request.SocialSecurityNumber,
+                Email: request.Email));
 
         var response = new CreateAccountResponseDto(openAccountResult.UserId);
 
         // Returnera 201 Created
         return Created(string.Empty, response);
     }
+
+    private static bool IsValidLuhn(string digits)
+    {
+        var sum = 0;
+
+        for (int i = 0; i < 9; i++)
+        {
+            var num = digits[i] - '0';
+            num *= (i % 2 == 0) ? 2 : 1;
+            if (num > 9) num -= 9;
+            sum += num;
+        }
+
+        var controlDigit = (10 - (sum % 10)) % 10;
+
+        return controlDigit == digits[9] - '0';
+    }
+
 }

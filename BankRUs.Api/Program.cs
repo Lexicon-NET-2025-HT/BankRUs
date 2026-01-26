@@ -1,4 +1,9 @@
+using BankRUs.Application.Identity;
 using BankRUs.Application.UseCases.OpenAccount;
+using BankRUs.Intrastructure.Identity;
+using BankRUs.Intrastructure.Persistance;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,11 +19,37 @@ var builder = WebApplication.CreateBuilder(args);
 //// instans av denna.
 //builder.Services.AddTransient<CustomerService>();
 
+// Registrera ApplicationDbContext i DI-containern
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+  options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<OpenAccountHandler>();
+builder.Services.AddScoped<IIdentityService, IdentityService>();
+
+// 3 typer av livslängder på objekt
+// - singleton = ett och samma objekt delas mellan alla andra under hela applikations livslängd
+// - scoped = varje HTTP-reqeust får sin egen isntans som sen delas av alla objekt inom denna request
+// - transitent = varje objekt får alltid sin egna instans av typen
+
+builder.Services
+  .AddIdentity<ApplicationUser, IdentityRole>()
+  .AddEntityFrameworkStores<ApplicationDbContext>()
+  .AddDefaultTokenProviders();
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+    dbContext.Database.Migrate();
+
+    await IdentitySeeder.SeedAsync(scope.ServiceProvider);
+}
 
 app.UseHttpsRedirection();
 

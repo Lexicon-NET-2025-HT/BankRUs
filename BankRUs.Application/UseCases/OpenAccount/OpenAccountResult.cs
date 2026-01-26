@@ -1,6 +1,3 @@
 ﻿namespace BankRUs.Application.UseCases.OpenAccount;
 
-public class OpenAccountResult
-{
-    public required int CustomerId { get; init; }
-}
+public record OpenAccountResult(Guid UserId);

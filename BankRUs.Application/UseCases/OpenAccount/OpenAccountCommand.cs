@@ -1,10 +1,10 @@
 ﻿
 namespace BankRUs.Application.UseCases.OpenAccount;
 
-public class OpenAccountCommand
-{
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public string SocialSecurityNumber { get; set; }
-    public string Email { get; set; }
-}
+// Command, Query, DTO = använd record (+ se till att den är immutable)
+public record OpenAccountCommand(
+    string FirstName,
+    string LastName,
+    string SocialSecurityNumber,
+    string Email
+);
