@@ -1,13 +1,21 @@
 ﻿using BankRUs.Application.Identity;
+using BankRUs.Application.Respositories;
+using BankRUs.Domain.Entities;
 
 namespace BankRUs.Application.UseCases.OpenAccount;
 
 public class OpenAccountHandler
 {
     private readonly IIdentityService _identityService;
+    private readonly IBankAccountRepository _bankAccountRepository;
 
-    public OpenAccountHandler(IIdentityService identityService)
-        => _identityService = identityService;
+    public OpenAccountHandler(
+        IIdentityService identityService,
+        IBankAccountRepository bankAccountRepository)
+    {
+        _identityService = identityService;
+        _bankAccountRepository = bankAccountRepository;
+    }
 
     public async Task<OpenAccountResult> HandleAsync(OpenAccountCommand command)
     {
@@ -19,12 +27,17 @@ public class OpenAccountHandler
             SocialSecurityNumber: command.SocialSecurityNumber,
             Email: command.Email
          ));
-        
+
         // TODO: SocialSecurityNumber + Email ska vara UNIQUE
 
-        // TODO: Skapa bankkonto
-        // Delegera till infrastructure
-        
+        var bankAccount = new BankAccount(
+            accountNumber: "100.200.300",
+            name: "Standardkonto",
+            userId: createUserResult.UserId.ToString());
+
+        // Skapa bankkonto
+        bankAccount = await _bankAccountRepository.CreateBankAccount(bankAccount);
+
         // TODO: Skicka välkomstmail till kund
         // Delegera till infrastructure
         // _emailSender.Send("Ditt bankkonto är nu redo!");
