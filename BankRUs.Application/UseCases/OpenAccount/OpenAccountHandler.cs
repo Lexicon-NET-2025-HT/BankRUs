@@ -1,5 +1,5 @@
 ﻿using BankRUs.Application.Identity;
-using BankRUs.Application.Respositories;
+using BankRUs.Application.Repositories;
 using BankRUs.Domain.Entities;
 
 namespace BankRUs.Application.UseCases.OpenAccount;
@@ -19,8 +19,9 @@ public class OpenAccountHandler
 
     public async Task<OpenAccountResult> HandleAsync(OpenAccountCommand command)
     {
-        // TODO: Skapa användarkonto (ASP.NET Core Identity)
-        // Delegera till infrastructure
+        // 1 - Validera indata
+
+        // 2 - Skapa användarkonto
         var createUserResult = await _identityService.CreateUserAsync(new CreateUserRequest(
             FirstName: command.FirstName,
             LastName: command.LastName,
@@ -28,19 +29,18 @@ public class OpenAccountHandler
             Email: command.Email
          ));
 
-        // TODO: SocialSecurityNumber + Email ska vara UNIQUE
-
+        // 3 - Skapa ett första bankkonto åt kunden
         var bankAccount = new BankAccount(
             accountNumber: "100.200.300",
             name: "Standardkonto",
             userId: createUserResult.UserId.ToString());
 
-        // Skapa bankkonto
-        bankAccount = await _bankAccountRepository.CreateBankAccount(bankAccount);
+        await _bankAccountRepository.CreateBankAccount(bankAccount);
 
-        // TODO: Skicka välkomstmail till kund
-        // Delegera till infrastructure
+        // 4 - Skicka välkomstmail till kund
         // _emailSender.Send("Ditt bankkonto är nu redo!");
+
+        // 5 - Returnera resultatet av kommandot
 
         return new OpenAccountResult(UserId: createUserResult.UserId);
     }

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BankRUs.Intrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260127104322_Add_BankAccount")]
+    [Migration("20260128124056_Add_BankAccount")]
     partial class Add_BankAccount
     {
         /// <inheritdoc />
@@ -39,6 +39,9 @@ namespace BankRUs.Intrastructure.Migrations
                     b.Property<decimal>("Balance")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsLocked")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()

@@ -5,7 +5,6 @@ namespace BankRUs.Domain.Entities;
 
 public class BankAccount
 {
-    // Det här är en entitet som inte finns i databasen
     public BankAccount(string accountNumber, string name, string userId)
     {
         Id = Guid.NewGuid();
@@ -22,6 +21,8 @@ public class BankAccount
     [MaxLength(25)]
     public string Name { get; protected set; }
     
+    public bool IsLocked { get; protected set; }
+
     public decimal Balance { get; protected set; }
     public string UserId { get; protected set; }
 

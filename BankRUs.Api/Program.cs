@@ -1,7 +1,9 @@
 using BankRUs.Application.Identity;
+using BankRUs.Application.Repositories;
 using BankRUs.Application.UseCases.OpenAccount;
 using BankRUs.Intrastructure.Identity;
 using BankRUs.Intrastructure.Persistance;
+using BankRUs.Intrastructure.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,6 +29,9 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped<OpenAccountHandler>();
 builder.Services.AddScoped<IIdentityService, IdentityService>();
+
+// Repositories
+builder.Services.AddScoped<IBankAccountRepository, BankAccountRepository>();
 
 // 3 typer av livslängder på objekt
 // - singleton = ett och samma objekt delas mellan alla andra under hela applikations livslängd

@@ -1,6 +1,6 @@
 ﻿using BankRUs.Domain.Entities;
 
-namespace BankRUs.Application.Respositories;
+namespace BankRUs.Application.Repositories;
 
 public interface IBankAccountRepository
 {
